@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<config>
+    <modules>
+        <Webgriffe_Config>
+            <active>true</active>
+            <codePool>community</codePool>
+            <depends>
+                <Mage_Core/>
+
+            </depends>
+        </Webgriffe_Config>
+    </modules>
+</config>
