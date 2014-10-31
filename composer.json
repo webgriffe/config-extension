@@ -8,11 +8,5 @@
             "name":"Webgriffe Srl",
             "email":"support@webgriffe.com"
         }
-    ],
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:webgriffe/config-extension.git"
-        }
     ]
 }
