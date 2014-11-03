@@ -32,9 +32,9 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
         $this->extend($merge);
     }
 
-    protected function _flatConfig(Varien_Simplexml_Element $node, array $flat = array(), $flatKey = '')
+    protected function _flatConfig($node, array $flat = array(), $flatKey = '')
     {
-        if ($node->hasChildren()) {
+        if ($node instanceof Varien_Simplexml_Element && $node->hasChildren()) {
             foreach ($node->children() as $key => $child) {
                 /** @var $child Varien_Simplexml_Element */
                 if ($child->hasChildren()) {
