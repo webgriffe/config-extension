@@ -18,7 +18,9 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     {
         parent::loadBase();
         $this->_loadOverride(self::BASE_OVERRIDE_FILENAME, false);
-        $this->_loadOverride($this->_getBaseEnvOverrideFilename(), false);
+        if ($this->_isEnvironmentSet()) {
+            $this->_loadOverride($this->_getBaseEnvOverrideFilename(), false);
+        }
         return $this;
     }
 
@@ -32,7 +34,9 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     {
         parent::loadModules();
         $this->_loadOverride(self::BASE_OVERRIDE_FILENAME, false);
-        $this->_loadOverride($this->_getBaseEnvOverrideFilename(), false);
+        if ($this->_isEnvironmentSet()) {
+            $this->_loadOverride($this->_getBaseEnvOverrideFilename(), false);
+        }
         return $this;
     }
 
@@ -41,7 +45,9 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     {
         parent::loadDb();
         $this->_loadOverride(self::OVERRIDE_FILENAME);
-        $this->_loadOverride($this->_getEnvOverrideFilename());
+        if ($this->_isEnvironmentSet()) {
+            $this->_loadOverride($this->_getEnvOverrideFilename());
+        }
         return $this;
     }
 
@@ -124,6 +130,7 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     }
 
     /**
+     * @throws RuntimeException
      * @return string Returns current environment by reading the environment variable "MAGE_ENVIRONMENT". Default
      * environment is "prod".
      */
@@ -133,11 +140,16 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
             return $_SERVER[self::SERVER_VAR_NAME];
         }
 
-        return 'prod';
+        throw new RuntimeException('Current environment has not been set.');
     }
 
     protected function _getBaseEnvOverrideFilename()
     {
         return sprintf(self::BASE_ENV_OVERRIDE_PATTERN, $this->_getCurrentEnvironment());
+    }
+
+    protected function _isEnvironmentSet()
+    {
+        return isset($_SERVER[self::SERVER_VAR_NAME]);
     }
 }
