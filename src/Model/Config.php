@@ -13,6 +13,7 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     const ENV_OVERRIDE_PATTERN = 'config-override-%s.xml';
     const BASE_OVERRIDE_FILENAME = 'local-override.xml';
     const BASE_ENV_OVERRIDE_PATTERN = 'local-override-%s.xml';
+    const CONFIG_OVERRIDE_NODE_NAME = 'config_override';
 
     public function loadBase()
     {
@@ -68,16 +69,23 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
             $this->_inheritWebsitesConfigToStores($websites, $merge);
         }
 
+        $node = $merge->getNode();
+        if ($node) {
+            $flatConfig = $this->flatConfig($node);
+            foreach ($flatConfig as $path => $value) {
+                $merge->setNode(self::CONFIG_OVERRIDE_NODE_NAME . '/' . $path, $value);
+            }
+        }
         $this->extend($merge);
     }
 
-    protected function _flatConfig($node, array $flat = array(), $flatKey = '')
+    public function flatConfig($node, array $flat = array(), $flatKey = '')
     {
         if ($node instanceof Varien_Simplexml_Element && $node->hasChildren()) {
             foreach($node->children() as $key => $child) {
                 /** @var $child Varien_Simplexml_Element */
                 if ($child->hasChildren()) {
-                    $flat = $this->_flatConfig($child, $flat, $flatKey . $key . '/');
+                    $flat = $this->flatConfig($child, $flat, $flatKey . $key . '/');
                     continue;
                 }
 
@@ -94,7 +102,7 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
      */
     protected function _inheritDefaultConfigToWebsites($merge, $websites)
     {
-        $flattenDefault = $this->_flatConfig($merge->getNode('default'));
+        $flattenDefault = $this->flatConfig($merge->getNode('default'));
         foreach ($flattenDefault as $path => $value) {
             foreach ($websites as $website) {
                 $merge->setNode('websites/' . $website . '/' . $path, $value, false);
@@ -116,7 +124,7 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
             }
             foreach ($stores as $store) {
                 $store = $store->getCode();
-                $flattenWebsite = $this->_flatConfig($merge->getNode('websites/' . $websiteCode));
+                $flattenWebsite = $this->flatConfig($merge->getNode('websites/' . $websiteCode));
                 foreach ($flattenWebsite as $path => $value) {
                     $merge->setNode('stores/' . $store . '/' . $path, $value, false);
                 }

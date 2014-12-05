@@ -19,6 +19,11 @@
             <webgriffe_config>
                 <class>Webgriffe_Config_Block</class>
             </webgriffe_config>
+            <adminhtml>
+                <rewrite>
+                    <system_config_form>Webgriffe_Config_Block_Adminhtml_System_Config_Form</system_config_form>
+                </rewrite>
+            </adminhtml>
         </blocks>
         <helpers>
             <webgriffe_config>
