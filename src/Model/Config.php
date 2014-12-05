@@ -69,13 +69,7 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
             $this->_inheritWebsitesConfigToStores($websites, $merge);
         }
 
-        $node = $merge->getNode();
-        if ($node) {
-            $flatConfig = $this->flatConfig($node);
-            foreach ($flatConfig as $path => $value) {
-                $merge->setNode(self::CONFIG_OVERRIDE_NODE_NAME . '/' . $path, $value);
-            }
-        }
+        $this->_copyOverriddenConfigToDedicatedNode($merge);
         $this->extend($merge);
     }
 
@@ -159,5 +153,19 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     protected function _isEnvironmentSet()
     {
         return isset($_SERVER[self::SERVER_VAR_NAME]);
+    }
+
+    /**
+     * @param Mage_Core_Model_Config_Base $merge
+     */
+    protected function _copyOverriddenConfigToDedicatedNode($merge)
+    {
+        $node = $merge->getNode();
+        if ($node) {
+            $flatConfig = $this->flatConfig($node);
+            foreach ($flatConfig as $path => $value) {
+                $merge->setNode(self::CONFIG_OVERRIDE_NODE_NAME . '/' . $path, $value);
+            }
+        }
     }
 }
