@@ -21,39 +21,21 @@ class Webgriffe_Config_Block_Adminhtml_System_Config_Form extends Mage_Adminhtml
         if (!$this->_overriddenPaths) {
             $this->_initOverriddenPaths($configModel);
         }
-        $pathPrefix = $this->_computePathPrefix($this->getWebsiteCode(), $this->getStoreCode());
+        $pathPrefix = Mage::helper('webgriffe_config')->computePathPrefix(
+            $this->getWebsiteCode(),
+            $this->getStoreCode()
+        );
 
         foreach ($group->fields as $elements) {
             foreach ($elements as $element) {
                 $path = $this->_computeElementPath($group, $section, $fieldPrefix, $element, $pathPrefix);
                 if ($this->_isOverridden($path)) {
-                    $element->show_in_default = false;
-                    $element->show_in_website = false;
-                    $element->show_in_store = false;
+                    $this->_adjustOverriddenConfigElement($element, $configModel);
                 }
             }
         }
 
         return parent::initFields($fieldset, $group, $section, $fieldPrefix, $labelPrefix);
-    }
-
-    /**
-     * @param $websiteCode
-     * @param $storeCode
-     * @return string
-     */
-    protected function _computePathPrefix($websiteCode, $storeCode)
-    {
-        if (empty($websiteCode) && empty($storeCode)) {
-            $pathPrefix = 'default';
-            return $pathPrefix;
-        } elseif (!empty($websiteCode) && empty($storeCode)) {
-            $pathPrefix = 'websites/' . $websiteCode;
-            return $pathPrefix;
-        } else { // !empty($websiteCode) && !empty($storeCode)
-            $pathPrefix = 'stores/' . $storeCode;
-            return $pathPrefix;
-        }
     }
 
     /**
@@ -94,6 +76,34 @@ class Webgriffe_Config_Block_Adminhtml_System_Config_Form extends Mage_Adminhtml
     protected function _isOverridden($path)
     {
         return in_array($path, $this->_overriddenPaths);
+    }
+
+    protected function _getOverrideFilesList(Webgriffe_Config_Model_Config $configModel)
+    {
+        return implode(
+            '<br/>',
+            array_map(
+                function($value) {
+                    return "<em>app/etc/$value</em>";
+                },
+                $configModel->getOverrideFilesProcessed()
+            )
+        );
+    }
+
+    /**
+     * @param $element
+     * @param $configModel
+     */
+    protected function _adjustOverriddenConfigElement($element, $configModel)
+    {
+        $element->frontend_model = 'webgriffe_config/adminhtml_system_config_form_overriddenField';
+        $element->backend_model = 'webgriffe_config/config_data';
+        $element->comment = $this->__(
+            'This config setting has been forced to shown value by Webgriffe_Config extension. Check the ' .
+            'following files: %s',
+            $this->_getOverrideFilesList($configModel)
+        );
     }
 
 } 

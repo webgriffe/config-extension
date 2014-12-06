@@ -15,6 +15,8 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
     const BASE_ENV_OVERRIDE_PATTERN = 'local-override-%s.xml';
     const CONFIG_OVERRIDE_NODE_NAME = 'config_override';
 
+    protected $_overrideFilesProcessed = array();
+
     public function loadBase()
     {
         parent::loadBase();
@@ -61,7 +63,10 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
         $etcDir = $this->getOptions()->getEtcDir();
         $file = $etcDir . DS . $overrideFilename;
         $merge = clone $this->_prototype;
-        $merge->loadFile($file);
+        if ($merge->loadFile($file) === false) {
+            return;
+        }
+        $this->_overrideFilesProcessed[] = $overrideFilename;
 
         if ($inheritConfig) {
             $websites = array_keys($this->getNode('websites')->asArray());
@@ -167,5 +172,13 @@ class Webgriffe_Config_Model_Config extends Mage_Core_Model_Config
                 $merge->setNode(self::CONFIG_OVERRIDE_NODE_NAME . '/' . $path, $value);
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function getOverrideFilesProcessed()
+    {
+        return $this->_overrideFilesProcessed;
     }
 }
