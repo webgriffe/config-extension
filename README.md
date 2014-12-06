@@ -75,4 +75,26 @@ This extension allows to override base Magento configuration (local.xml config).
 Doing so, for the `test` environment, Magento will use `my-project-test` database with the same credentials specified in the `local.xml` file.
 Then using a library like [CgiHttpKernel](https://github.com/igorw/CgiHttpKernel) you can do full acceptance (or functional testing) on a test-dedicated database.
 
+Overridden config values are shown in backend
+---------------------------------------------
+
+Overridden config values are shown in Magento's backend. Every config setting it's shown on its section. For example, if you have the following `config-override.xml` file:
+
+	<?xml version="1.0"?>
+	<config>
+    	<default>
+        	<design>
+            	<package>
+                	<name>my-package-name</name>
+	            </package>
+    	    </design>
+	    </default>
+	</config>
+
+When you'll go to `System -> Configuration -> General -> Design` you'll find the overridden config value shown and not editable.
+
+![image](admin-screenshot.png)
+
+This feature improves a lot the usability of this extension.
+
 
