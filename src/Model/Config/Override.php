@@ -87,7 +87,7 @@ class Webgriffe_Config_Model_Config_Override
         $this->_overrideFilesProcessed[] = $overrideFilename;
 
         if ($inheritConfig) {
-            $websites = array_keys(Mage::getConfig()->getNode('websites')->asArray());
+            $websites = $this->_getWebsites();
             $this->_inheritDefaultConfigToWebsites($merge, $websites);
             $this->_inheritWebsitesConfigToStores($websites, $merge);
         }
@@ -173,5 +173,18 @@ class Webgriffe_Config_Model_Config_Override
                 $merge->setNode(self::CONFIG_OVERRIDE_NODE_NAME . '/' . $path, $value);
             }
         }
+    }
+
+    /**
+     * @return array
+     */
+    protected function _getWebsites()
+    {
+        $websites = array();
+        foreach (Mage::getConfig()->getNode('websites')->children() as $website) {
+            /** @var Varien_Simplexml_Element $website */
+            $websites[] = $website->getName();
+        }
+        return $websites;
     }
 } 
