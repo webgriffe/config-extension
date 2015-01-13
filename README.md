@@ -102,6 +102,8 @@ To Do
 
 * [EcomDev_PHPUnit](https://github.com/EcomDev/EcomDev_PHPUnit) integration: when running tests with EcomDev\_PHPUnit the Webgriffe\_Config model will not work because EcomDev replaces the config model with its own. We're working on a separate bridge extension that integrates EcomDev\_PHPUnit with Webgriffe\_Config.
 * [n98-magerun](https://github.com/netz98/n98-magerun) integration?
-* Performance improvements.
+* Performance improvements
+* Interdependent fields handling
+* Password fields handling
 
 
