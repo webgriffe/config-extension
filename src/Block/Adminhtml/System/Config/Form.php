@@ -19,10 +19,6 @@ class Webgriffe_Config_Block_Adminhtml_System_Config_Form extends Mage_Adminhtml
     {
         $configModel = Mage::getConfig();
 
-        if (!$configModel instanceof Webgriffe_Config_Model_Config) {
-            return parent::initFields($fieldset, $group, $section, $fieldPrefix, $labelPrefix);
-        }
-
         $this->_configOverrideModel = $configModel->getConfigOverrideModel();
 
         if (!$this->_overriddenPaths) {
@@ -68,9 +64,9 @@ class Webgriffe_Config_Block_Adminhtml_System_Config_Form extends Mage_Adminhtml
     }
 
     /**
-     * @param Webgriffe_Config_Model_Config $configModel
+     * @param Mage_Core_Model_Config $configModel
      */
-    protected function _initOverriddenPaths(Webgriffe_Config_Model_Config $configModel)
+    protected function _initOverriddenPaths(Mage_Core_Model_Config $configModel)
     {
         $overriddenConfig = $configModel->getNode(Webgriffe_Config_Model_Config_Override::CONFIG_OVERRIDE_NODE_NAME);
         $this->_overriddenPaths = array_keys($this->_configOverrideModel->flatConfig($overriddenConfig));
