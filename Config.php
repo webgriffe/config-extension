@@ -354,7 +354,9 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
         }
 
         // Webgriffe Config Extension - Loading Override
-        $this->extend($this->_configOverrideModel->getOverride());
+        if ($this->_isLocalConfigLoaded && Mage::isInstalled()) {
+            $this->extend($this->_configOverrideModel->getOverride());
+        }
         // Webgriffe Config Extension - Loading Override
 
         return $this;
