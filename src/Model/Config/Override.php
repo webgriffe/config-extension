@@ -9,11 +9,11 @@
 class Webgriffe_Config_Model_Config_Override
 {
     const SERVER_VAR_NAME = 'MAGE_ENVIRONMENT';
+    const LOAD_ECOMDEV_PHPUNIT_CONFIG_SERVER_VAR_NAME = 'MAGE_LOAD_ECOMDEV_PHPUNIT_CONFIG';
     const OVERRIDE_FILENAME = 'config-override.xml';
     const ENV_OVERRIDE_PATTERN = 'config-override-%s.xml';
-    const BASE_OVERRIDE_FILENAME = 'local-override.xml';
-    const BASE_ENV_OVERRIDE_PATTERN = 'local-override-%s.xml';
     const CONFIG_OVERRIDE_NODE_NAME = 'config_override';
+    const ECOMDEV_PHPUNIT_CONFIG_FILENAME = 'local.xml.phpunit';
 
     /**
      * @var Mage_Core_Model_Config_Base
@@ -30,9 +30,9 @@ class Webgriffe_Config_Model_Config_Override
 
     public function getBaseOverride()
     {
-        $merge = $this->_loadOverride(self::BASE_OVERRIDE_FILENAME, false);
-        if ($this->_isEnvironmentSet()) {
-            $merge->extend($this->_loadOverride($this->_getBaseEnvOverrideFilename(), false));
+        $merge = clone $this->_prototype;
+        if ($this->_isEcomdevPhpunitConfigLoadEnabled()) {
+            $merge->extend($this->_loadOverride(self::ECOMDEV_PHPUNIT_CONFIG_FILENAME, false));
         }
         return $merge;
     }
@@ -151,11 +151,6 @@ class Webgriffe_Config_Model_Config_Override
         throw new RuntimeException('Current environment has not been set.');
     }
 
-    protected function _getBaseEnvOverrideFilename()
-    {
-        return sprintf(self::BASE_ENV_OVERRIDE_PATTERN, $this->_getCurrentEnvironment());
-    }
-
     protected function _isEnvironmentSet()
     {
         return isset($_SERVER[self::SERVER_VAR_NAME]);
@@ -186,5 +181,14 @@ class Webgriffe_Config_Model_Config_Override
             $websites[] = $website->getName();
         }
         return $websites;
+    }
+
+    /**
+     * @return bool
+     */
+    protected function _isEcomdevPhpunitConfigLoadEnabled()
+    {
+        return isset($_SERVER[self::LOAD_ECOMDEV_PHPUNIT_CONFIG_SERVER_VAR_NAME]) &&
+            (bool)$_SERVER[self::LOAD_ECOMDEV_PHPUNIT_CONFIG_SERVER_VAR_NAME];
     }
 } 
