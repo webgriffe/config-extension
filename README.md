@@ -2,23 +2,17 @@ Webgriffe Config
 ================
 
 Magento extension that improves config system.
-Work in progress....
 
 Installation
 ------------
 
-Please, use [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer) and add `webgriffe/config-extension` to your dependencies. Also add this repository to your `composer.json`.
+Please, use [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer) and add `webgriffe/config-extension` to your dependencies.
 
-	"repositories": [
-        {
-            "type": "vcs",
-            "url": "git@github.com:webgriffe/config-extension.git"
-        }
-    ]
-    
-Then you have to enable in your Magento installation the improved Config Model. To do so, edit your `index.php` and define `config_model` option during `Mage::run()`:
+	$ composer require webgriffe/config-extension
+	    
+The extension patches the main Magento's config model by putting another `Mage_Core_Model_Config` class in the `community` code pool.
 
-	Mage::run($mageRunCode, $mageRunType, array('config_model' => 'Webgriffe_Config_Model_Config'));
+We're aware that creating this kind of "monkey patch" is a Magento's coding smell but this is the only way to override Magento config logic in a reliable way.
 
 Config override
 ---------------
@@ -54,26 +48,11 @@ You can set different config based on current environment by defining several en
 	SetEnv MAGE_ENVIRONMENT "dev"
 	
 
-Base config (local.xml) override
---------------------------------
+EcomDev_PHPUnit local.xml.phpunit laoding
+-----------------------------------------
 
-This extension allows to override base Magento configuration (local.xml config). Base config override is also environment specific. You must put a `local-override-{env}.xml` file in `app/etc` and this will override your `local.xml` file. This can be useful for full acceptance testing on a different database. For example you can have the following file in `app/etc/local-override-test.xml`:
-
-	<?xml version="1.0"?>
-	<config>
-    	<global>
-        	<resources>
-            	<default_setup>
-                	<connection>
-                   		<dbname><![CDATA[my-project-test]]></dbname>
-	               </connection>
-    	       </default_setup>
-        	</resources>
-	    </global>
-	</config>
-	
-Doing so, for the `test` environment, Magento will use `my-project-test` database with the same credentials specified in the `local.xml` file.
-Then using a library like [CgiHttpKernel](https://github.com/igorw/CgiHttpKernel) you can do full acceptance (or functional testing) on a test-dedicated database.
+This extension also allows to load the `local.xml.phpunit` file of the [EcomDev_PHPUnit](https://github.com/EcomDev/EcomDev_PHPUnit) testing module. To enable this feature the `MAGE_LOAD_ECOMDEV_PHPUNIT_CONFIG` environment variable must be set to `1`.
+Then using a library like [CgiHttpKernel](https://github.com/igorw/CgiHttpKernel) you can do full acceptance (or functional testing) on a test-dedicated database (which is also used by other EcomDev_PHPUnit's tests).
 
 Overridden config values are shown in backend
 ---------------------------------------------
@@ -100,8 +79,7 @@ This feature improves a lot the usability of this extension.
 To Do
 -----
 
-* [EcomDev_PHPUnit](https://github.com/EcomDev/EcomDev_PHPUnit) integration: when running tests with EcomDev\_PHPUnit the Webgriffe\_Config model will not work because EcomDev replaces the config model with its own. We're working on a separate bridge extension that integrates EcomDev\_PHPUnit with Webgriffe\_Config.
-* [n98-magerun](https://github.com/netz98/n98-magerun) integration?
+* Dist files support: for example try to load `config-override.xml` but if it's not found try with `config-override.xml.dist` (PHPUnit/PHPCS style).
 * Performance improvements
 * Interdependent fields handling
 * Password fields handling

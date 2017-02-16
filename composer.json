@@ -8,5 +8,8 @@
             "name":"Webgriffe Srl",
             "email":"support@webgriffe.com"
         }
-    ]
+    ],
+    "suggest": {
+        "ecomdev/ecomdev_phpunit": "Loading of the local.xml.phpunit file is supported."
+    }
 }
