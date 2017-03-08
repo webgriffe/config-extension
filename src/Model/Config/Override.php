@@ -14,6 +14,7 @@ class Webgriffe_Config_Model_Config_Override
     const ENV_OVERRIDE_PATTERN = 'config-override-%s.xml';
     const CONFIG_OVERRIDE_NODE_NAME = 'config_override';
     const ECOMDEV_PHPUNIT_CONFIG_FILENAME = 'local.xml.phpunit';
+    const DIST_EXTENSION = 'dist';
 
     /**
      * @var Mage_Core_Model_Config_Base
@@ -31,6 +32,7 @@ class Webgriffe_Config_Model_Config_Override
     public function getBaseOverride()
     {
         $merge = clone $this->_prototype;
+        $merge->setXml(new Varien_Simplexml_Element('<config></config>'));
         if ($this->_isEcomdevPhpunitConfigLoadEnabled()) {
             $merge->extend($this->_loadOverride(self::ECOMDEV_PHPUNIT_CONFIG_FILENAME, false));
         }
@@ -39,8 +41,10 @@ class Webgriffe_Config_Model_Config_Override
 
     public function getOverride()
     {
-        $merge = $this->_loadOverride(self::OVERRIDE_FILENAME);
+        $merge = $this->_loadOverride($this->_getDistFilename(self::OVERRIDE_FILENAME));
+        $merge->extend($this->_loadOverride(self::OVERRIDE_FILENAME));
         if ($this->_isEnvironmentSet()) {
+            $merge->extend($this->_loadOverride($this->_getDistFilename($this->_getEnvOverrideFilename())));
             $merge->extend($this->_loadOverride($this->_getEnvOverrideFilename()));
         }
         return $merge;
@@ -81,6 +85,7 @@ class Webgriffe_Config_Model_Config_Override
         $etcDir = Mage::getConfig()->getOptions()->getEtcDir();
         $file = $etcDir . DS . $overrideFilename;
         $merge = clone $this->_prototype;
+        $merge->setXml(new Varien_Simplexml_Element('<config></config>'));
         if ($merge->loadFile($file) === false) {
             return $merge;
         }
@@ -190,5 +195,14 @@ class Webgriffe_Config_Model_Config_Override
     {
         return isset($_SERVER[self::LOAD_ECOMDEV_PHPUNIT_CONFIG_SERVER_VAR_NAME]) &&
             (bool)$_SERVER[self::LOAD_ECOMDEV_PHPUNIT_CONFIG_SERVER_VAR_NAME];
+    }
+
+    /**
+     * @param $filename
+     * @return string
+     */
+    private function _getDistFilename($filename)
+    {
+        return $filename . '.' . self::DIST_EXTENSION;
     }
 } 
