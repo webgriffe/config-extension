@@ -149,8 +149,9 @@ class Webgriffe_Config_Model_Config_Override
      */
     protected function _getCurrentEnvironment()
     {
-        if (isset($_SERVER[self::SERVER_VAR_NAME])) {
-            return $_SERVER[self::SERVER_VAR_NAME];
+        $currentEnv = getenv(self::SERVER_VAR_NAME);
+        if (!empty($currentEnv)) {
+            return $currentEnv;
         }
 
         throw new RuntimeException('Current environment has not been set.');
@@ -158,7 +159,11 @@ class Webgriffe_Config_Model_Config_Override
 
     protected function _isEnvironmentSet()
     {
-        return isset($_SERVER[self::SERVER_VAR_NAME]);
+        $currentEnv = getenv(self::SERVER_VAR_NAME);
+        if (!empty($currentEnv)) {
+            return true;
+        }
+        return false;
     }
 
     /**
