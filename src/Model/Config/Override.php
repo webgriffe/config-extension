@@ -149,7 +149,7 @@ class Webgriffe_Config_Model_Config_Override
      */
     protected function _getCurrentEnvironment()
     {
-        $currentEnv = getenv(self::SERVER_VAR_NAME);
+        $currentEnv = $this->_readServerOrGetenvEnvironmentVariable();
         if (!empty($currentEnv)) {
             return $currentEnv;
         }
@@ -159,7 +159,7 @@ class Webgriffe_Config_Model_Config_Override
 
     protected function _isEnvironmentSet()
     {
-        $currentEnv = getenv(self::SERVER_VAR_NAME);
+        $currentEnv = $this->_readServerOrGetenvEnvironmentVariable();
         if (!empty($currentEnv)) {
             return true;
         }
@@ -209,5 +209,16 @@ class Webgriffe_Config_Model_Config_Override
     private function _getDistFilename($filename)
     {
         return $filename . '.' . self::DIST_EXTENSION;
+    }
+
+    /**
+     * @return array|false|string
+     */
+    private function _readServerOrGetenvEnvironmentVariable()
+    {
+        $currentEnv = array_key_exists(self::SERVER_VAR_NAME, $_SERVER) ?
+            $_SERVER[self::SERVER_VAR_NAME] :
+            getenv(self::SERVER_VAR_NAME);
+        return $currentEnv;
     }
 } 
