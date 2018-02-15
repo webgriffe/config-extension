@@ -15,9 +15,11 @@
     "require": {
         "cweagans/composer-patches": "^1.6"
     },
-    "patches": {
-        "magento/core": {
-          "Config model patch to allow override": "https://raw.githubusercontent.com/webgriffe/config-extension/patch-strategy/config-model.patch"
+    "extra": {
+        "patches": {
+            "magento/core": {
+              "Config model patch to allow override": "https://raw.githubusercontent.com/webgriffe/config-extension/patch-strategy/config-model.patch"
+            }
         }
     }
 }
