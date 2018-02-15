@@ -1,3 +1,2 @@
 src				app/code/community/Webgriffe/Config/
-Config.php      app/code/community/Mage/Core/Model/Config.php
 etc/Webgriffe_Config.xml	app/etc/modules/Webgriffe_Config.xml

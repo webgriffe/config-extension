@@ -11,5 +11,13 @@
     ],
     "suggest": {
         "ecomdev/ecomdev_phpunit": "Loading of the local.xml.phpunit file is supported."
+    },
+    "require": {
+        "cweagans/composer-patches": "^1.6"
+    },
+    "patches": {
+        "magento/core": {
+          "Config model patch to allow override": "https://raw.githubusercontent.com/webgriffe/config-extension/patch-strategy/config-model.patch"
+        }
     }
 }
