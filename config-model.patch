@@ -1,0 +1,115 @@
+From f74766113e641a4199fc9d1fc112d711c8174063 Mon Sep 17 00:00:00 2001
+From: Manuele Menozzi <manuele.menozzi@gmail.com>
+Date: Thu, 15 Feb 2018 08:31:41 +0100
+Subject: [PATCH] Patches Mage_Core_Model_Config to allow override
+
+---
+ app/code/core/Mage/Core/Model/Config.php | 56 +++++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 22 deletions(-)
+
+diff --git a/app/code/core/Mage/Core/Model/Config.php b/app/code/core/Mage/Core/Model/Config.php
+index 36a4b93ee..c9857bce2 100644
+--- a/app/code/core/Mage/Core/Model/Config.php
++++ b/app/code/core/Mage/Core/Model/Config.php
+@@ -1,27 +1,6 @@
+ <?php
+ /**
+- * Magento
+- *
+- * NOTICE OF LICENSE
+- *
+- * This source file is subject to the Open Software License (OSL 3.0)
+- * that is bundled with this package in the file LICENSE.txt.
+- * It is also available through the world-wide-web at this URL:
+- * http://opensource.org/licenses/osl-3.0.php
+- * If you did not receive a copy of the license and are unable to
+- * obtain it through the world-wide-web, please send an email
+- * to license@magento.com so we can send you a copy immediately.
+- *
+- * DISCLAIMER
+- *
+- * Do not edit or add to this file if you wish to upgrade Magento to newer
+- * versions in the future. If you wish to customize Magento for your
+- * needs please refer to http://www.magento.com for more information.
+- *
+- * @category    Mage
+- * @package     Mage_Core
+- * @copyright  Copyright (c) 2006-2017 X.commerce, Inc. and affiliates (http://www.magento.com)
+- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
++ * This is a monkey patch of the original Mage_Core_Model_Config to allow config override.
+  */
+ 
+ 
+@@ -189,6 +168,11 @@ class Mage_Core_Model_Config extends Mage_Core_Model_Config_Base
+      */
+     protected $_allowedModules = array();
+ 
++    /**
++     * @var Webgriffe_Config_Model_Config_Override
++     */
++    protected $_configOverrideModel;
++
+     /**
+      * Class construct
+      *
+@@ -201,6 +185,7 @@ public function __construct($sourceData=null)
+         $this->_prototype       = new Mage_Core_Model_Config_Base();
+         $this->_cacheChecksum   = null;
+         parent::__construct($sourceData);
++        $this->_configOverrideModel = new Webgriffe_Config_Model_Config_Override($this->_prototype);
+     }
+ 
+     /**
+@@ -283,6 +268,11 @@ public function loadBase()
+         if (in_array($etcDir.DS.'local.xml', $files)) {
+             $this->_isLocalConfigLoaded = true;
+         }
++
++        // Webgriffe Config Extension - Loading Base Override
++        $this->extend($this->_configOverrideModel->getBaseOverride());
++        // Webgriffe Config Extension - Loading Base Override
++
+         return $this;
+     }
+ 
+@@ -327,6 +317,10 @@ public function loadModules()
+         $this->_isLocalConfigLoaded = $mergeConfig->loadFile($this->getOptions()->getEtcDir().DS.'local.xml');
+         if ($this->_isLocalConfigLoaded) {
+             $this->extend($mergeConfig);
++
++            // Webgriffe Config Extension - Re-loading Base Override
++            $this->extend($this->_configOverrideModel->getBaseOverride());
++            // Webgriffe Config Extension - Re-loading Base Override
+         }
+ 
+         $this->applyExtends();
+@@ -357,6 +351,13 @@ public function loadDb()
+             $dbConf->loadToXml($this);
+             Varien_Profiler::stop('config/load-db');
+         }
++
++        // Webgriffe Config Extension - Loading Override
++        if ($this->_isLocalConfigLoaded && Mage::isInstalled()) {
++            $this->extend($this->_configOverrideModel->getOverride());
++        }
++        // Webgriffe Config Extension - Loading Override
++
+         return $this;
+     }
+ 
+@@ -1678,4 +1679,15 @@ protected function _isNodeNameHasUpperCase(Mage_Core_Model_Config_Element $event
+     {
+         return (strtolower($event->getName()) !== (string)$event->getName());
+     }
++
++    /**
++     * Webgriffe Config Extension.
++     * Config override model getter.
++     *
++     * @return \Webgriffe_Config_Model_Config_Override
++     */
++    public function getConfigOverrideModel()
++    {
++        return $this->_configOverrideModel;
++    }
+ }
