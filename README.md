@@ -3,21 +3,49 @@ Webgriffe Config
 
 Magento 1.x extension that improves config system.
 
+Indeed, Magento configuration is driven by database. This, sometimes, is overkill and forces us to maintain upgrade scripts to keep Magento envorinment aligned with features development.
+
 Installation
 ------------
 
-Please, use [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer) and add `webgriffe/config-extension` to your dependencies.
+To use the version greater or equal than `3.*` of this extension you need to have the Magento core itself managed by [Composer](https://getcomposer.org/) using the Aydin Hassan's [magento-core-composer-installer](https://github.com/AydinHassan/magento-core-composer-installer) and the [Bragento's](https://github.com/bragento/magento-core) `magento/core` package.
 
-	$ composer require webgriffe/config-extension
-	    
-The extension patches the main Magento's config model by putting another `Mage_Core_Model_Config` class in the `community` code pool.
+Indeed the version greater or equal than `3.*` of this extension uses the Cameron Eagans's [composer-patches](https://github.com/cweagans/composer-patches) to apply a patch to the `Mage_Core_Model_Config` to allow configuration override.
 
-We're aware that creating this kind of "monkey patch" is a Magento's coding smell but this is the only way to override Magento config logic in a reliable way.
+If not already installed, add to your project the [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer), and then add the `webgriffe/config-extension` to your dependencies:
+
+	composer require --no-update webgriffe/config-extension
+
+Then you need to add an `extra` configuration to your `composer.json` file:
+
+```json
+"extra": {
+    "enable-patching": true,
+    "composer-exit-on-patch-failure": true
+}
+```
+
+Moreover you have to remove the `magento/core` package from the filesystem so the package is re-installed and then patched.
+
+	rm -rf vendor/magento/core
+	
+Finally, you can install the extension:
+
+	composer update webgriffe/config-extension
+	
+Composer should output something like the following during the installation:
+
+	- Applying patches for magento/core
+    vendor/webgriffe/config-extension/config-model.patch (Config model patch to allow override)
+	- MagentoCoreInstaller: Installing: "magento/core" version: "1.9.3.7" to: "magento"
+
+Now you should have the extension succesfully installed and the `Mage_Core_Model_Config` patched, look at the `app/code/core/Mage/Core/Model/Config.php` to confirm that it's patched (you should see a patch comment on the class heading).
+
+If you cannot manage the Magento core with Composer you have to use the version `2.*` of this extension but you'll miss the latest features and the installation steps are different and are described on the `README.md` of the `2.x` branch.
 
 Config override
 ---------------
 
-Magento configuration is driven by database. This, sometimes, is overkill and forces us to maintain upgrade script to keep Magento envorinment aligned with features development.
 So, this extension enables additional config file that overrides database configuration. The file must be at path `app/etc/config-override.xml.dist`. For example:
 
 ```xml
