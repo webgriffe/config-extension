@@ -18,7 +18,7 @@
     "extra": {
         "patches": {
             "magento/core": {
-              "Config model patch to allow override": "https://raw.githubusercontent.com/webgriffe/config-extension/patch-strategy/config-model.patch"
+              "Config model patch to allow override": "vendor/webgriffe/config-extension/config-model.patch"
             }
         }
     }
