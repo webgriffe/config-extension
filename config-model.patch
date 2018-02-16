@@ -1,14 +1,14 @@
-From b4253299881e0667cc2da73eb789599874df80c8 Mon Sep 17 00:00:00 2001
+From 513e5f4b86632ba21a3eb5e16e8379a36a09c4c9 Mon Sep 17 00:00:00 2001
 From: Manuele Menozzi <manuele.menozzi@gmail.com>
-Date: Fri, 16 Feb 2018 15:27:56 +0100
+Date: Fri, 16 Feb 2018 15:33:15 +0100
 Subject: [PATCH] Patches Mage_Core_Model_Config to allow override
 
 ---
- app/code/core/Mage/Core/Model/Config.php | 40 +++++++++++++++++++++++++++++++-
- 1 file changed, 39 insertions(+), 1 deletion(-)
+ app/code/core/Mage/Core/Model/Config.php | 38 ++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
 diff --git a/app/code/core/Mage/Core/Model/Config.php b/app/code/core/Mage/Core/Model/Config.php
-index 36a4b93ee..8170e496f 100644
+index 36a4b93ee..a896585d9 100644
 --- a/app/code/core/Mage/Core/Model/Config.php
 +++ b/app/code/core/Mage/Core/Model/Config.php
 @@ -24,6 +24,11 @@
@@ -80,15 +80,6 @@ index 36a4b93ee..8170e496f 100644
          return $this;
      }
  
-@@ -396,7 +423,7 @@ protected function _canUseLocalModules()
- 
-         if ($disableLocalModules && !defined('COMPILER_INCLUDE_PATH')) {
-             set_include_path(
--                // excluded '/app/code/local'
-+            // excluded '/app/code/local'
-                 BP . DS . 'app' . DS . 'code' . DS . 'community' . PS .
-                 BP . DS . 'app' . DS . 'code' . DS . 'core' . PS .
-                 BP . DS . 'lib' . PS .
 @@ -1678,4 +1705,15 @@ protected function _isNodeNameHasUpperCase(Mage_Core_Model_Config_Element $event
      {
          return (strtolower($event->getName()) !== (string)$event->getName());
