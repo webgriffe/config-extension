@@ -8,22 +8,28 @@ Indeed, Magento configuration is driven by database. This, sometimes, is overkil
 Installation
 ------------
 
-To use the version greater or equal than `3.*` of this extension you need to have the Magento core itself managed by [Composer](https://getcomposer.org/) using the Aydin Hassan's [magento-core-composer-installer](https://github.com/AydinHassan/magento-core-composer-installer) and the [Bragento's](https://github.com/bragento/magento-core) `magento/core` package.
+To use the version greater or equal than `3.*` of this extension you need to have the Magento core itself managed by [Composer](https://getcomposer.org/) using the Aydin Hassan's [magento-core-composer-installer](https://github.com/AydinHassan/magento-core-composer-installer) and a `magento-core` package like the [Bragento's](https://github.com/bragento/magento-core) `magento/core`.
 
 Indeed the version greater or equal than `3.*` of this extension uses the Cameron Eagans's [composer-patches](https://github.com/cweagans/composer-patches) to apply a patch to the `Mage_Core_Model_Config` to allow configuration override.
 
-If not already installed, add to your project the [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer), and then add the `webgriffe/config-extension` to your dependencies:
+If not already installed, add to your project the [Magento Composer Installer](https://github.com/magento-hackathon/magento-composer-installer), and then add the `webgriffe/config-extension` and the `cweagans/composer-patches` packages to your dependencies:
 
 	composer require --no-update webgriffe/config-extension
+	composer require --no-update cweagans/composer-patches
 
-Then you need to add an `extra` configuration to your `composer.json` file:
+Then you need to add an `extra` configuration to your `composer.json` file with the patch configuration:
 
 ```json
 "extra": {
-    "enable-patching": true,
+    "patches": {
+        "magento/core": {
+            "Config model patch to allow override": "https://raw.githubusercontent.com/webgriffe/config-extension/master/config-model.patch"
+        }
+    },
     "composer-exit-on-patch-failure": true
 }
 ```
+If you have a different package as Magento core you have to use its name in the `patches` section.
 
 Moreover you have to remove the `magento/core` package from the filesystem so the package is re-installed and then patched.
 
@@ -31,7 +37,7 @@ Moreover you have to remove the `magento/core` package from the filesystem so th
 	
 Finally, you can install the extension:
 
-	composer update webgriffe/config-extension
+	composer update webgriffe/config-extension cweagans/composer-patches
 	
 Composer should output something like the following during the installation:
 
