@@ -10,16 +10,7 @@
         }
     ],
     "suggest": {
-        "ecomdev/ecomdev_phpunit": "Loading of the local.xml.phpunit file is supported."
-    },
-    "require": {
-        "cweagans/composer-patches": "^1.6"
-    },
-    "extra": {
-        "patches": {
-            "magento/core": {
-              "Config model patch to allow override": "vendor/webgriffe/config-extension/config-model.patch"
-            }
-        }
+        "ecomdev/ecomdev_phpunit": "Loading of the local.xml.phpunit file is supported.",
+        "cweagans/composer-patches": "To apply the necessary Mage_Core_Model_Config patch. See the README.md"
     }
 }
