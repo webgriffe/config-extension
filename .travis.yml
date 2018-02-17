@@ -18,8 +18,8 @@ install:
   - composer require --no-update aydin-hassan/magento-core-composer-installer
   - composer require --no-update magento/core "$MAGENTO_VERSION"
 
-  - composer require --no-update webgriffe/config-extension "dev-build"
   - composer config repo.build path ../config-extension
+  - composer require --no-update webgriffe/config-extension "dev-build"
   - composer require --no-update cweagans/composer-patches
   - jq '.extra.patches."magento/core".patch ="https://raw.githubusercontent.com/webgriffe/config-extension/master/config-model.patch"' composer.json > composer.json.tmp && cp composer.json.tmp composer.json
   - composer config extra.composer-exit-on-patch-failure true
