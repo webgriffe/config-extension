@@ -16,7 +16,6 @@ install:
   - composer require --no-update magento-hackathon/magento-composer-installer
   - composer config extra.magento-root-dir "./"
   - composer require --no-update aydin-hassan/magento-core-composer-installer
-  - composer require --no-update magento/magento-core-composer-installer
   - composer require --no-update magento/core "$MAGENTO_VERSION"
 
   - composer require --no-update webgriffe/config-extension "dev-build"
