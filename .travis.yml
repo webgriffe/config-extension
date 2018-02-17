@@ -1,0 +1,51 @@
+language: php
+php:
+  - '5.6'
+
+env:
+  - MAGENTO_VERSION="1.9.3.7"
+
+cache:
+  directories:
+    - $HOME/.composer
+
+install:
+  - git checkout -b build
+  - cd ../
+  - mkdir magento && cd magento
+  - composer require --no-update magento-hackathon/magento-composer-installer
+  - composer config extra.magento-root-dir "./"
+  - composer require --no-update aydin-hassan/magento-core-composer-installer
+  - composer require --no-update magento/magento-core-composer-installer
+  - composer require --no-update magento/core "$MAGENTO_VERSION"
+
+  - composer require --no-update webgriffe/config-extension "dev-build"
+  - composer config repo.build path ../config-extension
+  - composer require --no-update cweagans/composer-patches
+  - jq '.extra.patches."magento/core".patch ="https://raw.githubusercontent.com/webgriffe/config-extension/master/config-model.patch"' composer.json > composer.json.tmp && cp composer.json.tmp composer.json
+  - composer config extra.composer-exit-on-patch-failure true
+
+  - composer install
+  - curl -O https://files.magerun.net/n98-magerun.phar
+  - chmod +x ./n98-magerun.phar
+  - ./n98-magerun.phar install -n --noDownload --dbHost="localhost" --dbUser="root" --dbName="magentodb" --installSampleData=no --useDefaultConfigParams=yes --installationFolder="." --baseUrl="http://magento.localdomain/"
+  - ./n98-magerun.phar cache:disable
+
+script:
+  # Ensure that base url is the one used during installation
+  - echo "Mage::getStoreConfig('web/secure/base_url');" | ./n98-magerun.phar dev:console | grep "http://magento.localdomain/"
+
+  # Tests default dist override
+  - echo "<config><default><web><secure><base_url>http://overridden.url/</base_url></secure></web></default></config>" > app/etc/config-override.xml.dist
+  - echo "Mage::getStoreConfig('web/secure/base_url');" | ./n98-magerun.phar dev:console | grep "http://overridden.url/"
+
+  # Tests default non-dist override
+  - echo "<config><default><web><secure><base_url>http://my-overridden.url/</base_url></secure></web></default></config>" > app/etc/config-override.xml
+  - echo "Mage::getStoreConfig('web/secure/base_url');" | ./n98-magerun.phar dev:console | grep "http://my-overridden.url/"
+
+  # Tests environment override
+  - echo "<config><default><web><secure><base_url>http://overridden-dev.url/</base_url></secure></web></default></config>" > app/etc/config-override-dev.xml.dist
+  - export MAGE_ENVIRONMENT="dev"
+  - echo "Mage::getStoreConfig('web/secure/base_url');" | ./n98-magerun.phar dev:console | grep "http://overridden-dev.url/"
+
+
