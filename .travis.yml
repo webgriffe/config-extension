@@ -4,6 +4,9 @@ php:
 
 env:
   - MAGENTO_VERSION="1.9.3.7"
+  - MAGENTO_VERSION="1.9.2.4"
+  - MAGENTO_VERSION="1.9.1.1"
+  - MAGENTO_VERSION="1.9.0.1"
 
 cache:
   directories:
