@@ -1,6 +1,8 @@
 Webgriffe Config
 ================
 
+[![Build Status](https://travis-ci.org/webgriffe/config-extension.svg?branch=master)](https://travis-ci.org/webgriffe/config-extension)
+
 Magento 1.x extension that improves config system.
 
 Indeed, Magento configuration is driven by database. This, sometimes, is overkill and forces us to maintain upgrade scripts to keep Magento envorinment aligned with features development.
